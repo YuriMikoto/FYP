@@ -1168,7 +1168,7 @@ ImFont* ImFontAtlas::AddFontFromFileTTF(const char* filename, float size_pixels,
     void* data = ImLoadFileToMemory(filename, "rb", &data_size, 0);
     if (!data)
     {
-        IM_ASSERT(0); // Could not load file.
+        //IM_ASSERT(0); // Could not load file.
         return NULL;
     }
     ImFontConfig font_cfg = font_cfg_template ? *font_cfg_template : ImFontConfig();
