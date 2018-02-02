@@ -5,6 +5,8 @@
 #include <SFML/Graphics.hpp>
 #include "Box2d\Box2d.h"
 
+#include "Wall.h"
+
 class Game
 {
 public:
@@ -26,6 +28,11 @@ private:
 	void setupSprite();
 	void setupBoard();
 
+	Wall northWall;
+	Wall southWall;
+	Wall eastWall;
+	Wall westWall;
+
 	sf::RenderWindow m_window; // main SFML window
 	sf::Font m_ArialBlackfont; // font used by message
 	sf::Text m_welcomeMessage; // text used for message on screen
@@ -35,6 +42,8 @@ private:
 
 	float boardWidth = 2.7f; //North/South walls' width.
 	float boardLength = 1.35f; //East/West walls' height.
+	float wallDepth = 0.1f; //Width of each wall between the inner boundary and the outer edge of the board.
+
 	//Box2D is tuned for meters, kilograms, and seconds. So you can consider the extents to be in meters.
 	// Box2D generally works best when objects are the size of typical real world objects. For example, a barrel is about 1 meter tall.
 	// -Box2D manual, section 2.2.

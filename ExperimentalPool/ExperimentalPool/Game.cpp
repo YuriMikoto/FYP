@@ -3,16 +3,13 @@
 #include "Game.h"
 #include <iostream>
 
-#include "Wall.h"
-
 Game::Game() :
 	m_window{ sf::VideoMode{ 1600, 900, 32 }, "Experimental Pool" },
 	m_exitGame{false} //when true game will exit
 {
 	setupFontAndText(); // load font 
-	setupSprite(); // load texture
-
 	setupBoard();
+	setupSprite(); // load texture
 }
 
 Game::~Game()
@@ -62,7 +59,7 @@ void Game::processEvents()
 }
 
 /// <summary>
-/// Update the game world
+/// Update the game world.
 /// </summary>
 /// <param name="t_deltaTime">time interval per frame</param>
 void Game::update(sf::Time t_deltaTime)
@@ -74,13 +71,24 @@ void Game::update(sf::Time t_deltaTime)
 }
 
 /// <summary>
-/// draw the frame and then switch bufers
+/// Draw all renderable objects in the game from here.
 /// </summary>
 void Game::render()
 {
 	m_window.clear(sf::Color::White);
-	m_window.draw(m_welcomeMessage);
-	m_window.draw(m_logoSprite);
+	//m_window.draw(m_welcomeMessage);
+	//m_window.draw(m_logoSprite);
+
+	/*northRect.setFillColor(sf::Color::Black);
+	northRect.setPosition(sf::Vector2f(northWall.getPosition().x, northWall.getPosition().y));
+	northRect.setSize(sf::Vector2f(northWall.getWidth() * 100, northWall.getHeight() * 100));
+	m_window.draw(northRect);*/
+
+	northWall.Draw(&m_window);
+	southWall.Draw(&m_window);
+	westWall.Draw(&m_window);
+	eastWall.Draw(&m_window);
+
 	m_window.display();
 }
 
@@ -105,7 +113,7 @@ void Game::setupFontAndText()
 }
 
 /// <summary>
-/// load the texture and setup the sprite for the logo
+/// Prepare sprites for every renderable object in the game from here.
 /// </summary>
 void Game::setupSprite()
 {
@@ -116,16 +124,44 @@ void Game::setupSprite()
 	}
 	m_logoSprite.setTexture(m_logoTexture);
 	m_logoSprite.setPosition(300.0f, 180.0f);
+
+	northWall.SetupSprite();
+	southWall.SetupSprite();
+	westWall.SetupSprite();
+	eastWall.SetupSprite();
+	//Uncomment the following to change the colours of each wall to be semi-transparent. This is to test that no walls are overlapping. 
+	//northWall.renderShape.setFillColor(sf::Color(255, 0, 0, 128));
+	//southWall.renderShape.setFillColor(sf::Color(0, 255, 0, 128));
+	//westWall.renderShape.setFillColor(sf::Color(0, 0, 255, 128));
+	//eastWall.renderShape.setFillColor(sf::Color(0, 0, 0, 128));
 }
 
+/// <summary>
+/// Creates the four walls of the board in Box2D.
+/// </summary>
 void Game::setupBoard()
 {
-	Wall north(b2Vec2(0, 0), boardWidth, 1);
-	north.SetupShape(world);
-	Wall south(b2Vec2(0, 0), boardWidth, 1);
-	south.SetupShape(world);
-	Wall west(b2Vec2(0, 0), 1, boardLength);
-	west.SetupShape(world);
-	Wall east(b2Vec2(0, 0), 1, boardLength);
-	east.SetupShape(world);
+	northWall = Wall(b2Vec2(wallDepth, 0), boardWidth, wallDepth);
+	northWall.def.position.Set(northWall.getPosition().x, northWall.getPosition().y);
+	northWall.body = world.CreateBody(&northWall.def);
+	northWall.shape.SetAsBox(northWall.getWidth() / 2.0f, northWall.getHeight() / 2.0f);
+	northWall.body->CreateFixture(&northWall.shape, 0.0f);
+
+	southWall = Wall(b2Vec2(wallDepth, boardLength-wallDepth), boardWidth, wallDepth);
+	southWall.def.position.Set(southWall.getPosition().x, southWall.getPosition().y);
+	southWall.body = world.CreateBody(&southWall.def);
+	southWall.shape.SetAsBox(southWall.getWidth() / 2.0f, southWall.getHeight() / 2.0f);
+	southWall.body->CreateFixture(&southWall.shape, 0.0f);
+
+	westWall = Wall(b2Vec2(0, 0), wallDepth, boardLength);
+	westWall.def.position.Set(westWall.getPosition().x, westWall.getPosition().y);
+	westWall.body = world.CreateBody(&westWall.def);
+	westWall.shape.SetAsBox(westWall.getWidth() / 2.0f, westWall.getHeight() / 2.0f);
+	westWall.body->CreateFixture(&westWall.shape, 0.0f);
+
+	eastWall = Wall(b2Vec2(boardWidth+ wallDepth, 0), wallDepth, boardLength);
+	northWall.def.position.Set(northWall.getPosition().x, northWall.getPosition().y);
+	northWall.body = world.CreateBody(&northWall.def);
+	northWall.shape.SetAsBox(northWall.getWidth() / 2.0f, northWall.getHeight() / 2.0f);
+	northWall.body->CreateFixture(&northWall.shape, 0.0f);
 }
