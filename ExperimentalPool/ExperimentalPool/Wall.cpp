@@ -25,13 +25,19 @@ Wall::~Wall()
 
 }
 
+void Wall::Update()
+{
+	position = body->GetPosition();
+	renderShape.setPosition(sf::Vector2f(position.x * 500, position.y * 500));
+}
+
 /// <summary>
 /// There seems to be a problem here, so for now, setup of Box2D shape is done in Game.cpp.
 /// </summary>
 /// <param name="world">Game world to create the object in.</param>
 void Wall::SetupShape(b2World world)
 {
-	def.position.Set(position.x, position.y);
+	def.position.Set(position.x, -position.y);
 	body = world.CreateBody(&def);
 	shape.SetAsBox(wallWidth/2.0f, wallHeight/2.0f);
 	body->CreateFixture(&shape, 0.0f);
@@ -43,7 +49,8 @@ void Wall::SetupShape(b2World world)
 void Wall::SetupSprite()
 {
 	renderShape.setFillColor(sf::Color::Black);
-	renderShape.setPosition(sf::Vector2f(position.x * 500, position.y * 500));
+	//renderShape.setOrigin(sf::Vector2f(wallWidth / 2.0f, wallHeight / 2.0f));
+	renderShape.setPosition(sf::Vector2f(body->GetPosition().x * 500, body->GetPosition().y * 500));
 	renderShape.setSize(sf::Vector2f(wallWidth * 500, wallHeight * 500));
 }
 

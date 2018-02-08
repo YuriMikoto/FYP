@@ -11,6 +11,7 @@ public:
 	void SetupShape(b2World world);
 	void SetupSprite();
 	void Draw(sf::RenderWindow* window);
+	void Update();
 
 	b2Vec2 getPosition();
 	float getWidth();
@@ -19,6 +20,8 @@ public:
 	b2BodyDef def;
 	b2Body* body;
 	b2PolygonShape shape;
+	b2FixtureDef fdef;
+	b2Fixture* fixt;
 
 	sf::RectangleShape renderShape;
 private:

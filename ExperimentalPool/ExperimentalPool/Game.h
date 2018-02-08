@@ -6,6 +6,7 @@
 #include "Box2d\Box2d.h"
 
 #include "Wall.h"
+#include "Ball.h"
 
 class Game
 {
@@ -19,6 +20,9 @@ public:
 
 private:
 	b2World world = b2World(b2Vec2(0, 0));
+	float32 timeStep = 1.0f / 60.0f;
+	int32 velocityIterations = 8;
+	int32 positionIterations = 3;
 
 	void processEvents();
 	void update(sf::Time t_deltaTime);
@@ -32,6 +36,10 @@ private:
 	Wall southWall;
 	Wall eastWall;
 	Wall westWall;
+
+	Ball cueBall;
+
+	void debugConsole();
 
 	sf::RenderWindow m_window; // main SFML window
 	sf::Font m_ArialBlackfont; // font used by message
