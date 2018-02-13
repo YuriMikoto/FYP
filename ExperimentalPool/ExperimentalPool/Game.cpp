@@ -72,16 +72,25 @@ void Game::update(sf::Time t_deltaTime)
 	}
 	
 	world.Step(timeStep, velocityIterations, positionIterations);
-	cueBall.Update();
+	balls[0].Update();
+	balls[1].Update();
 	//northWall.Update();
-	debugConsole();
+	//debugConsole();
 }
 
 void Game::debugConsole()
 {
 	//system("CLS");
-	std::cout << "Ball position: (" << cueBall.body->GetPosition().x << ", " << cueBall.body->GetPosition().y << ")" << std::endl;
-	std::cout << "Ball Velocity: (" << cueBall.body->GetLinearVelocity().x << ", " << cueBall.body->GetLinearVelocity().y << ")" << std::endl;
+	std::cout << "Ball position: (" << balls[0].body->GetPosition().x << ", " << balls[0].body->GetPosition().y << ")" << std::endl;
+	std::cout << "Ball Velocity: (" << balls[0].body->GetLinearVelocity().x << ", " << balls[0].body->GetLinearVelocity().y << ")" << std::endl;
+	std::cout << std::endl;
+	//std::cout << "West wall body position: (" << westWall.body->GetPosition().x << ", " << westWall.body->GetPosition().y << ")" << std::endl;
+	//std::cout << "West wall draw position: (" << westWall.renderShape.getPosition().x << ", " << westWall.renderShape.getPosition().y << ")" << std::endl;
+	//std::cout << "West wall true position: (" << westWall.getPosition().x << ", " << westWall.getPosition().y << ")" << std::endl;
+	//std::cout << std::endl;
+	std::cout << "North wall body position: (" << northWall.body->GetPosition().x << ", " << northWall.body->GetPosition().y << ")" << std::endl;
+	std::cout << "North wall draw position: (" << northWall.renderShape.getPosition().x << ", " << northWall.renderShape.getPosition().y << ")" << std::endl;
+	std::cout << "North wall true position: (" << northWall.getPosition().x << ", " << northWall.getPosition().y << ")" << std::endl;
 
 	std::cout << std::endl;
 }
@@ -105,7 +114,8 @@ void Game::render()
 	westWall.Draw(&m_window);
 	eastWall.Draw(&m_window);
 
-	cueBall.Draw(&m_window);
+	balls[0].Draw(&m_window);
+	balls[1].Draw(&m_window);
 
 	m_window.display();
 }
@@ -147,13 +157,9 @@ void Game::setupSprite()
 	southWall.SetupSprite();
 	westWall.SetupSprite();
 	eastWall.SetupSprite();
-	//Uncomment the following to change the colours of each wall to be semi-transparent. This is to test that no walls are overlapping. 
-	//northWall.renderShape.setFillColor(sf::Color(255, 0, 0, 128));
-	//southWall.renderShape.setFillColor(sf::Color(0, 255, 0, 128));
-	//westWall.renderShape.setFillColor(sf::Color(0, 0, 255, 128));
-	//eastWall.renderShape.setFillColor(sf::Color(0, 0, 0, 128));
 
-	cueBall.SetupSprite();
+	balls[0].SetupSprite(sf::Color(200, 200, 200, 255));
+	balls[1].SetupSprite(sf::Color(128, 196, 255, 255));
 }
 
 /// <summary>
@@ -195,56 +201,26 @@ void Game::setupBoard()
 
 	//Walls
 	{
-		//northWall = Wall(b2Vec2(wallDepth, 0), boardWidth, wallDepth);
-		/*northWall.def.position.Set(northWall.getPosition().x, northWall.getPosition().y);
-		northWall.body = world.CreateBody(&northWall.def);
-		northWall.shape.SetAsBox(northWall.getWidth() / 2.0f, northWall.getHeight() / 2.0f);
-		northWall.body->CreateFixture(&northWall.shape, 0.0f);*/
-		
-		//northWall.def.position.Set(1.4f, 0.625f);
 		northWall = Wall(b2Vec2(1.4f, 1.25f), boardWidth, wallDepth);
-		northWall.def.position.Set(1.4f, 1.25f);
+		northWall.def.position.Set(1.4f+wallDepth / 2.0, 1.25f + wallDepth / 2.0);
 		northWall.body = world.CreateBody(&northWall.def);
 		northWall.shape.SetAsBox(2.7f / 2.0f, 0.1f / 2.0f);
 		northWall.body->CreateFixture(&northWall.shape, 0.0f);
-		/*northWall.fdef.shape = &northWall.shape;
-		northWall.fdef.restitution = 1.0f;
-		northWall.fixt = northWall.body->CreateFixture(&northWall.fdef);*/
-
-		//southWall = Wall(b2Vec2(wallDepth, boardLength - wallDepth), boardWidth, wallDepth);
-		/*southWall.def.position.Set(southWall.getPosition().x, southWall.getPosition().y);
-		southWall.body = world.CreateBody(&southWall.def);
-		southWall.shape.SetAsBox(southWall.getWidth() / 2.0f, southWall.getHeight() / 2.0f);
-		southWall.body->CreateFixture(&southWall.shape, 0.0f);*/
-		//southWall.def.position.Set(1.4f, -0.625f);
 
 		southWall = Wall(b2Vec2(1.4f, 0), boardWidth, wallDepth);
-		southWall.def.position.Set(1.4f, 0);
+		southWall.def.position.Set(1.4f + wallDepth / 2.0, 0 + wallDepth / 2.0);
 		southWall.body = world.CreateBody(&southWall.def);
 		southWall.shape.SetAsBox(2.7f / 2.0f, 0.1f / 2.0f);
 		southWall.body->CreateFixture(&southWall.shape, 0.0f);
-		/*southWall.fdef.shape = &southWall.shape;
-		southWall.fdef.restitution = 1.0f;
-		southWall.fixt = southWall.body->CreateFixture(&southWall.fdef);*/
 
-		//westWall = Wall(b2Vec2(0, 0), wallDepth, boardLength);
-		//westWall = Wall(b2Vec2(0, 0.625f), wallDepth, boardLength);
 		westWall = Wall(b2Vec2(0, 0), wallDepth, boardLength);
-		westWall.def.position.Set(0, 0.625f);
+		westWall.def.position.Set(0 + wallDepth / 2.0, 0.625f + wallDepth / 2.0);
 		westWall.body = world.CreateBody(&westWall.def);
 		westWall.shape.SetAsBox(0.1f / 2.0f, 1.35f / 2.0f);
 		westWall.body->CreateFixture(&westWall.shape, 0.0f);
-		/*westWall.fdef.shape = &westWall.shape;
-		westWall.fdef.restitution = 1.0f;
-		westWall.fixt = westWall.body->CreateFixture(&westWall.fdef);*/
 
-		/*eastWall = Wall(b2Vec2(boardWidth + wallDepth, 0), wallDepth, boardLength);
-		eastWall.def.position.Set(eastWall.getPosition().x, eastWall.getPosition().y);
-		eastWall.body = world.CreateBody(&eastWall.def);
-		eastWall.shape.SetAsBox(eastWall.getWidth() / 2.0f, eastWall.getHeight() / 2.0f);
-		eastWall.body->CreateFixture(&eastWall.shape, 0.0f);*/
 		eastWall = Wall(b2Vec2(2.8f, 0.625f), wallDepth, boardLength);
-		eastWall.def.position.Set(2.8f, 0.625f);
+		eastWall.def.position.Set(2.8f + wallDepth/2.0, 0.625f + wallDepth/2.0);
 		eastWall.body = world.CreateBody(&eastWall.def);
 		eastWall.shape.SetAsBox(0.1f / 2.0f, 1.35f / 2.0f);
 		eastWall.body->CreateFixture(&eastWall.shape, 0.0f);
@@ -256,18 +232,29 @@ void Game::setupBoard()
 	//Ball
 	{
 		//cueBall = Ball(b2Vec2(boardWidth / 2, boardLength / 2), true);
-		cueBall.def.type = b2_dynamicBody;
-		cueBall.def.position.Set(1.35f, 0.625f);
-		cueBall.body = world.CreateBody(&cueBall.def);
+		balls[0].def.type = b2_dynamicBody;
+		balls[0].def.position.Set(1.35f, 0.625f);
+		balls[0].body = world.CreateBody(&balls[0].def);
 		//cbshape.m_p.Set(cueBall.getPosition().x, cueBall.getPosition().y);
-		cueBall.shape.m_radius = 0.028f; //56mm diameter.
-		cueBall.fdef.shape = &cueBall.shape;
-		cueBall.fdef.density = 1848.88194565217f; //At least, I think that's the actual density of a pool cue ball.
-		cueBall.fdef.restitution = 0.6f;
-		cueBall.fdef.friction = 0.2f;
-		cueBall.fixt = cueBall.body->CreateFixture(&cueBall.fdef); 
+		balls[0].shape.m_radius = 0.028f; //56mm diameter.
+		balls[0].fdef.shape = &balls[0].shape;
+		balls[0].fdef.density = 1848.88194565217f; //At least, I think that's the actual density of a pool cue ball.
+		balls[0].fdef.restitution = 0.6f;
+		balls[0].fdef.friction = 0.2f;
+		balls[0].fixt = balls[0].body->CreateFixture(&balls[0].fdef);
+
+		//cueBall = Ball(b2Vec2(boardWidth / 2, boardLength / 2), true);
+		balls[1].def.type = b2_dynamicBody;
+		balls[1].def.position.Set(0.5f, 0.630f);
+		balls[1].body = world.CreateBody(&balls[1].def);
+		balls[1].shape.m_radius = 0.028f; //56mm diameter.
+		balls[1].fdef.shape = &balls[1].shape;
+		balls[1].fdef.density = 1848.88194565217f; //At least, I think that's the actual density of a pool cue ball.
+		balls[1].fdef.restitution = 0.6f;
+		balls[1].fdef.friction = 0.2f;
+		balls[1].fixt = balls[1].body->CreateFixture(&balls[1].fdef);
 	}
 
-	cueBall.body->ApplyLinearImpulseToCenter(b2Vec2(4.5f, 0), true); 
+	balls[0].body->ApplyLinearImpulseToCenter(b2Vec2(4.5f, 0.0f), true);
 	//Apply an impulse of (4.5f, 0) to see an inelastic collision. Try (4.6f, 0) and higher and it'll bounce at least once.
 }

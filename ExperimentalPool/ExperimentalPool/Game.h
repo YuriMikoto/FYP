@@ -37,7 +37,8 @@ private:
 	Wall eastWall;
 	Wall westWall;
 
-	Ball cueBall;
+	//Ball cueBall;
+	Ball balls[10];
 
 	void debugConsole();
 

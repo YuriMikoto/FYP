@@ -24,11 +24,12 @@ void Ball::Update()
 	renderShape.setPosition(sf::Vector2f(position.x * 500, position.y * 500));
 }
 
-void Ball::SetupSprite()
+void Ball::SetupSprite(sf::Color color)
 {
-	renderShape.setFillColor(sf::Color(200, 200, 200, 255));
-	renderShape.setPosition(sf::Vector2f(position.x * 500, position.y * 500));
+	renderShape.setFillColor(color);
 	renderShape.setRadius(shape.m_radius * 500);
+	renderShape.setOrigin(sf::Vector2f(renderShape.getRadius(), renderShape.getRadius()));
+	renderShape.setPosition(sf::Vector2f(position.x * 500, position.y * 500));
 }
 
 b2Vec2 Ball::getPosition()

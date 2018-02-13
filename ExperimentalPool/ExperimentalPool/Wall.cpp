@@ -49,7 +49,7 @@ void Wall::SetupShape(b2World world)
 void Wall::SetupSprite()
 {
 	renderShape.setFillColor(sf::Color::Black);
-	//renderShape.setOrigin(sf::Vector2f(wallWidth / 2.0f, wallHeight / 2.0f));
+	renderShape.setOrigin(sf::Vector2f(wallWidth * 250.0f, wallHeight * 250.0f));
 	renderShape.setPosition(sf::Vector2f(body->GetPosition().x * 500, body->GetPosition().y * 500));
 	renderShape.setSize(sf::Vector2f(wallWidth * 500, wallHeight * 500));
 }

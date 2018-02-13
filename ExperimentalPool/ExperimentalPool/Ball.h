@@ -10,7 +10,7 @@ public:
 	~Ball();
 	void Draw(sf::RenderWindow* window);
 	void Update();
-	void SetupSprite();
+	void SetupSprite(sf::Color color);
 
 	b2Vec2 getPosition();
 
