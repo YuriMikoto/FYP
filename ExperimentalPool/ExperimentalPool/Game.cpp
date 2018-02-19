@@ -2,7 +2,8 @@
 
 #include "Game.h"
 #include <iostream>
-#define b2_velocityThreshold 0; //This does not appear to be working. 
+#undef b2_velocityThreshold;
+#define b2_velocityThreshold 0.0f; //This does not appear to be working. 
 
 Game::Game() :
 	m_window{ sf::VideoMode{ 1600, 900, 32 }, "Experimental Pool" },
@@ -74,7 +75,6 @@ void Game::update(sf::Time t_deltaTime)
 	world.Step(timeStep, velocityIterations, positionIterations);
 	balls[0].Update();
 	balls[1].Update();
-	//northWall.Update();
 	//debugConsole();
 }
 
@@ -83,14 +83,6 @@ void Game::debugConsole()
 	//system("CLS");
 	std::cout << "Ball position: (" << balls[0].body->GetPosition().x << ", " << balls[0].body->GetPosition().y << ")" << std::endl;
 	std::cout << "Ball Velocity: (" << balls[0].body->GetLinearVelocity().x << ", " << balls[0].body->GetLinearVelocity().y << ")" << std::endl;
-	std::cout << std::endl;
-	//std::cout << "West wall body position: (" << westWall.body->GetPosition().x << ", " << westWall.body->GetPosition().y << ")" << std::endl;
-	//std::cout << "West wall draw position: (" << westWall.renderShape.getPosition().x << ", " << westWall.renderShape.getPosition().y << ")" << std::endl;
-	//std::cout << "West wall true position: (" << westWall.getPosition().x << ", " << westWall.getPosition().y << ")" << std::endl;
-	//std::cout << std::endl;
-	std::cout << "North wall body position: (" << northWall.body->GetPosition().x << ", " << northWall.body->GetPosition().y << ")" << std::endl;
-	std::cout << "North wall draw position: (" << northWall.renderShape.getPosition().x << ", " << northWall.renderShape.getPosition().y << ")" << std::endl;
-	std::cout << "North wall true position: (" << northWall.getPosition().x << ", " << northWall.getPosition().y << ")" << std::endl;
 
 	std::cout << std::endl;
 }
@@ -206,55 +198,68 @@ void Game::setupBoard()
 		northWall.body = world.CreateBody(&northWall.def);
 		northWall.shape.SetAsBox(2.7f / 2.0f, 0.1f / 2.0f);
 		northWall.body->CreateFixture(&northWall.shape, 0.0f);
+		northWall.fdef.shape = &northWall.shape;
+		northWall.fdef.restitution = 0.6f;
+		northWall.fixt = northWall.body->CreateFixture(&northWall.fdef);
 
 		southWall = Wall(b2Vec2(1.4f, 0), boardWidth, wallDepth);
 		southWall.def.position.Set(1.4f + wallDepth / 2.0, 0 + wallDepth / 2.0);
 		southWall.body = world.CreateBody(&southWall.def);
 		southWall.shape.SetAsBox(2.7f / 2.0f, 0.1f / 2.0f);
 		southWall.body->CreateFixture(&southWall.shape, 0.0f);
+		southWall.fdef.shape = &southWall.shape;
+		southWall.fdef.restitution = 0.6f;
+		southWall.fixt = southWall.body->CreateFixture(&southWall.fdef);
 
 		westWall = Wall(b2Vec2(0, 0), wallDepth, boardLength);
 		westWall.def.position.Set(0 + wallDepth / 2.0, 0.625f + wallDepth / 2.0);
 		westWall.body = world.CreateBody(&westWall.def);
 		westWall.shape.SetAsBox(0.1f / 2.0f, 1.35f / 2.0f);
 		westWall.body->CreateFixture(&westWall.shape, 0.0f);
+		westWall.fdef.shape = &westWall.shape;
+		westWall.fdef.restitution = 0.6f;
+		westWall.fixt = westWall.body->CreateFixture(&westWall.fdef);
 
 		eastWall = Wall(b2Vec2(2.8f, 0.625f), wallDepth, boardLength);
 		eastWall.def.position.Set(2.8f + wallDepth/2.0, 0.625f + wallDepth/2.0);
 		eastWall.body = world.CreateBody(&eastWall.def);
 		eastWall.shape.SetAsBox(0.1f / 2.0f, 1.35f / 2.0f);
 		eastWall.body->CreateFixture(&eastWall.shape, 0.0f);
-		/*eastWall.fdef.shape = &eastWall.shape;
-		eastWall.fdef.restitution = 1.0f;
-		eastWall.fixt = eastWall.body->CreateFixture(&eastWall.fdef);*/
+		eastWall.fdef.shape = &eastWall.shape;
+		eastWall.fdef.restitution = 0.6f;
+		eastWall.fixt = eastWall.body->CreateFixture(&eastWall.fdef);
 	}
 
 	//Ball
 	{
 		//cueBall = Ball(b2Vec2(boardWidth / 2, boardLength / 2), true);
 		balls[0].def.type = b2_dynamicBody;
+		balls[0].def.linearDamping = 0.5f;
+		balls[0].def.angularDamping = 0.01f;
 		balls[0].def.position.Set(1.35f, 0.625f);
 		balls[0].body = world.CreateBody(&balls[0].def);
 		//cbshape.m_p.Set(cueBall.getPosition().x, cueBall.getPosition().y);
 		balls[0].shape.m_radius = 0.028f; //56mm diameter.
 		balls[0].fdef.shape = &balls[0].shape;
 		balls[0].fdef.density = 1848.88194565217f; //At least, I think that's the actual density of a pool cue ball.
-		balls[0].fdef.restitution = 0.6f;
+		balls[0].fdef.restitution = 0.96f;
 		balls[0].fdef.friction = 0.2f;
 		balls[0].fixt = balls[0].body->CreateFixture(&balls[0].fdef);
 
 		//cueBall = Ball(b2Vec2(boardWidth / 2, boardLength / 2), true);
 		balls[1].def.type = b2_dynamicBody;
+		balls[1].def.linearDamping = 0.5f;
+		balls[1].def.angularDamping = 0.01f;
 		balls[1].def.position.Set(0.5f, 0.630f);
 		balls[1].body = world.CreateBody(&balls[1].def);
 		balls[1].shape.m_radius = 0.028f; //56mm diameter.
 		balls[1].fdef.shape = &balls[1].shape;
 		balls[1].fdef.density = 1848.88194565217f; //At least, I think that's the actual density of a pool cue ball.
-		balls[1].fdef.restitution = 0.6f;
+		balls[1].fdef.restitution = 0.96f;
 		balls[1].fdef.friction = 0.2f;
 		balls[1].fixt = balls[1].body->CreateFixture(&balls[1].fdef);
 	}
 
-	balls[0].body->ApplyLinearImpulseToCenter(b2Vec2(4.5f, 0.0f), true);
+	balls[0].body->ApplyLinearImpulseToCenter(b2Vec2(-7.5f, 0.0f), true);
 	//Apply an impulse of (4.5f, 0) to see an inelastic collision. Try (4.6f, 0) and higher and it'll bounce at least once.
 }

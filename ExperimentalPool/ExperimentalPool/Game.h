@@ -20,9 +20,9 @@ public:
 
 private:
 	b2World world = b2World(b2Vec2(0, 0));
-	float32 timeStep = 1.0f / 60.0f;
-	int32 velocityIterations = 8;
-	int32 positionIterations = 3;
+	const float32 timeStep = 1.0f / 60.0f;
+	const int32 velocityIterations = 8;
+	const int32 positionIterations = 3;
 
 	void processEvents();
 	void update(sf::Time t_deltaTime);

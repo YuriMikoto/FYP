@@ -22,6 +22,11 @@ void Ball::Update()
 {
 	position = body->GetPosition();
 	renderShape.setPosition(sf::Vector2f(position.x * 500, position.y * 500));
+
+	if (body->GetLinearVelocity().Length() < 0.01)
+	{
+		body->SetLinearVelocity(b2Vec2(0, 0));
+	}
 }
 
 void Ball::SetupSprite(sf::Color color)
