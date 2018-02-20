@@ -1,2 +1,1 @@
-﻿  glew.c
-  GLEW.vcxproj -> C:\Users\gameuser\Documents\Project (FINAL)\ExperimentalPool\Box2D-master\Box2D\Build\vs2017\bin\Debug\GLEW.lib
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Platforms\x64\PlatformToolsets\v141\Toolset.targets(36,5): error MSB8036: The Windows SDK version 8.1 was not found. Install the required version of Windows SDK or change the SDK version in the project property pages or by right-clicking the solution and selecting "Retarget solution".

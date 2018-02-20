@@ -2,8 +2,8 @@
 
 #include "Game.h"
 #include <iostream>
-#undef b2_velocityThreshold;
-#define b2_velocityThreshold 0.0f; //This does not appear to be working. 
+//#undef b2_velocityThreshold;
+//#define b2_velocityThreshold 0.0f; //This does not appear to be working. 
 
 Game::Game() :
 	m_window{ sf::VideoMode{ 1600, 900, 32 }, "Experimental Pool" },
@@ -260,6 +260,5 @@ void Game::setupBoard()
 		balls[1].fixt = balls[1].body->CreateFixture(&balls[1].fdef);
 	}
 
-	balls[0].body->ApplyLinearImpulseToCenter(b2Vec2(-7.5f, 0.0f), true);
-	//Apply an impulse of (4.5f, 0) to see an inelastic collision. Try (4.6f, 0) and higher and it'll bounce at least once.
+	balls[0].body->ApplyLinearImpulseToCenter(b2Vec2(4.5f, 2.0f), true);
 }
