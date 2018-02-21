@@ -19,6 +19,8 @@ public:
 	void run();
 
 private:
+	static const int BALL_COUNT = 10;
+
 	b2World world = b2World(b2Vec2(0, 0));
 	const float32 timeStep = 1.0f / 60.0f;
 	const int32 velocityIterations = 8;
@@ -38,7 +40,7 @@ private:
 	Wall westWall;
 
 	//Ball cueBall;
-	Ball balls[10];
+	Ball balls[BALL_COUNT];
 
 	void debugConsole();
 
@@ -52,6 +54,14 @@ private:
 	float boardWidth = 2.7f; //North/South walls' width.
 	float boardLength = 1.35f; //East/West walls' height.
 	float wallDepth = 0.1f; //Width of each wall between the inner boundary and the outer edge of the board.
+	float wallRestitution = 0.6f;
+
+	float ballRadius = 0.028f;
+	float ballRestitution = 0.96f;
+	float ballFriction = 0.2f;
+	float ballDensity = 1848.88194565217f;
+	float ballLinearDamping = 0.5f;
+	float ballAngularDamping = 0.01f;
 
 	//Box2D is tuned for meters, kilograms, and seconds. So you can consider the extents to be in meters.
 	// Box2D generally works best when objects are the size of typical real world objects. For example, a barrel is about 1 meter tall.

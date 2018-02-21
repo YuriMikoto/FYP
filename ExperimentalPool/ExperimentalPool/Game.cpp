@@ -2,8 +2,6 @@
 
 #include "Game.h"
 #include <iostream>
-//#undef b2_velocityThreshold;
-//#define b2_velocityThreshold 0.0f; //This does not appear to be working. 
 
 Game::Game() :
 	m_window{ sf::VideoMode{ 1600, 900, 32 }, "Experimental Pool" },
@@ -58,6 +56,14 @@ void Game::processEvents()
 				m_exitGame = true;
 			}
 		}
+
+		if (sf::Event::MouseButtonReleased == event.type)
+		{
+			if (sf::Mouse::Left == event.key.code)
+			{
+				balls[0].body->ApplyLinearImpulseToCenter(b2Vec2(-15.0f, 0.0f), true);
+			}
+		}
 	}
 }
 
@@ -73,8 +79,10 @@ void Game::update(sf::Time t_deltaTime)
 	}
 	
 	world.Step(timeStep, velocityIterations, positionIterations);
-	balls[0].Update();
-	balls[1].Update();
+	for (int i = 0; i < BALL_COUNT; i++)
+	{
+		balls[i].Update();
+	}
 	//debugConsole();
 }
 
@@ -106,8 +114,10 @@ void Game::render()
 	westWall.Draw(&m_window);
 	eastWall.Draw(&m_window);
 
-	balls[0].Draw(&m_window);
-	balls[1].Draw(&m_window);
+	for (int i = 0; i < BALL_COUNT; i++)
+	{
+		balls[i].Draw(&m_window);
+	}
 
 	m_window.display();
 }
@@ -150,8 +160,16 @@ void Game::setupSprite()
 	westWall.SetupSprite();
 	eastWall.SetupSprite();
 
-	balls[0].SetupSprite(sf::Color(200, 200, 200, 255));
-	balls[1].SetupSprite(sf::Color(128, 196, 255, 255));
+	balls[0].SetupSprite(sf::Color(240, 240, 240, 255));
+	balls[1].SetupSprite(sf::Color(255, 255, 0, 255));
+	balls[2].SetupSprite(sf::Color(0, 0, 255, 255));
+	balls[3].SetupSprite(sf::Color(255, 0, 0, 255));
+	balls[4].SetupSprite(sf::Color(192, 0, 192, 255));
+	balls[5].SetupSprite(sf::Color(255, 128, 0, 255));
+	balls[6].SetupSprite(sf::Color(0, 192, 0, 255));
+	balls[7].SetupSprite(sf::Color(192, 0, 0, 255));
+	balls[8].SetupSprite(sf::Color(0, 0, 0, 255));
+	balls[9].SetupSprite(sf::Color(128, 128, 128, 255));
 }
 
 /// <summary>
@@ -159,106 +177,74 @@ void Game::setupSprite()
 /// </summary>
 void Game::setupBoard()
 {
-	/*northWall = Wall(b2Vec2(wallDepth, 0), boardWidth, wallDepth);
-	northWall.def.position.Set(northWall.getPosition().x, northWall.getPosition().y);
-	northWall.body = world.CreateBody(&northWall.def);
-	northWall.shape.SetAsBox(northWall.getWidth() / 2.0f, northWall.getHeight() / 2.0f);
-	northWall.body->CreateFixture(&northWall.shape, 0.0f);
-
-	southWall = Wall(b2Vec2(wallDepth, boardLength-wallDepth), boardWidth, wallDepth);
-	southWall.def.position.Set(southWall.getPosition().x, southWall.getPosition().y);
-	southWall.body = world.CreateBody(&southWall.def);
-	southWall.shape.SetAsBox(southWall.getWidth() / 2.0f, southWall.getHeight() / 2.0f);
-	southWall.body->CreateFixture(&southWall.shape, 0.0f);
-
-	westWall = Wall(b2Vec2(0, 0), wallDepth, boardLength);
-	westWall.def.position.Set(westWall.getPosition().x, westWall.getPosition().y);
-	westWall.body = world.CreateBody(&westWall.def);
-	westWall.shape.SetAsBox(westWall.getWidth() / 2.0f, westWall.getHeight() / 2.0f);
-	westWall.body->CreateFixture(&westWall.shape, 0.0f);
-
-	eastWall = Wall(b2Vec2(boardWidth+ wallDepth, 0), wallDepth, boardLength);
-	eastWall.def.position.Set(eastWall.getPosition().x, eastWall.getPosition().y);
-	eastWall.body = world.CreateBody(&eastWall.def);
-	eastWall.shape.SetAsBox(eastWall.getWidth() / 2.0f, eastWall.getHeight() / 2.0f);
-	eastWall.body->CreateFixture(&eastWall.shape, 0.0f);
-
-	cueBall = Ball(b2Vec2(boardWidth / 2, boardLength / 2), true);
-	cueBall.def.type = b2_dynamicBody;
-	cueBall.def.position.Set(cueBall.getPosition().x, cueBall.getPosition().y);
-	cueBall.body = world.CreateBody(&cueBall.def);
-	cueBall.shape.m_p.Set(cueBall.getPosition().x, cueBall.getPosition().y);
-	cueBall.shape.m_radius = 0.028f; //56mm diameter.
-	cueBall.body->CreateFixture(&cueBall.shape, 1.7f); //Is that the actual density of a pool cue ball?*/
-
 	//Walls
 	{
 		northWall = Wall(b2Vec2(1.4f, 1.25f), boardWidth, wallDepth);
 		northWall.def.position.Set(1.4f+wallDepth / 2.0, 1.25f + wallDepth / 2.0);
 		northWall.body = world.CreateBody(&northWall.def);
-		northWall.shape.SetAsBox(2.7f / 2.0f, 0.1f / 2.0f);
+		northWall.shape.SetAsBox(boardWidth / 2.0f, wallDepth / 2.0f);
 		northWall.body->CreateFixture(&northWall.shape, 0.0f);
 		northWall.fdef.shape = &northWall.shape;
-		northWall.fdef.restitution = 0.6f;
+		northWall.fdef.restitution = wallRestitution;
 		northWall.fixt = northWall.body->CreateFixture(&northWall.fdef);
 
 		southWall = Wall(b2Vec2(1.4f, 0), boardWidth, wallDepth);
 		southWall.def.position.Set(1.4f + wallDepth / 2.0, 0 + wallDepth / 2.0);
 		southWall.body = world.CreateBody(&southWall.def);
-		southWall.shape.SetAsBox(2.7f / 2.0f, 0.1f / 2.0f);
+		southWall.shape.SetAsBox(boardWidth / 2.0f, wallDepth / 2.0f);
 		southWall.body->CreateFixture(&southWall.shape, 0.0f);
 		southWall.fdef.shape = &southWall.shape;
-		southWall.fdef.restitution = 0.6f;
+		southWall.fdef.restitution = wallRestitution;
 		southWall.fixt = southWall.body->CreateFixture(&southWall.fdef);
 
 		westWall = Wall(b2Vec2(0, 0), wallDepth, boardLength);
 		westWall.def.position.Set(0 + wallDepth / 2.0, 0.625f + wallDepth / 2.0);
 		westWall.body = world.CreateBody(&westWall.def);
-		westWall.shape.SetAsBox(0.1f / 2.0f, 1.35f / 2.0f);
+		westWall.shape.SetAsBox(wallDepth / 2.0f, boardLength / 2.0f);
 		westWall.body->CreateFixture(&westWall.shape, 0.0f);
 		westWall.fdef.shape = &westWall.shape;
-		westWall.fdef.restitution = 0.6f;
+		westWall.fdef.restitution = wallRestitution;
 		westWall.fixt = westWall.body->CreateFixture(&westWall.fdef);
 
 		eastWall = Wall(b2Vec2(2.8f, 0.625f), wallDepth, boardLength);
 		eastWall.def.position.Set(2.8f + wallDepth/2.0, 0.625f + wallDepth/2.0);
 		eastWall.body = world.CreateBody(&eastWall.def);
-		eastWall.shape.SetAsBox(0.1f / 2.0f, 1.35f / 2.0f);
+		eastWall.shape.SetAsBox(wallDepth / 2.0f, boardLength / 2.0f);
 		eastWall.body->CreateFixture(&eastWall.shape, 0.0f);
 		eastWall.fdef.shape = &eastWall.shape;
-		eastWall.fdef.restitution = 0.6f;
+		eastWall.fdef.restitution = wallRestitution;
 		eastWall.fixt = eastWall.body->CreateFixture(&eastWall.fdef);
 	}
 
-	//Ball
+	//Balls
 	{
-		//cueBall = Ball(b2Vec2(boardWidth / 2, boardLength / 2), true);
-		balls[0].def.type = b2_dynamicBody;
-		balls[0].def.linearDamping = 0.5f;
-		balls[0].def.angularDamping = 0.01f;
-		balls[0].def.position.Set(1.35f, 0.625f);
-		balls[0].body = world.CreateBody(&balls[0].def);
-		//cbshape.m_p.Set(cueBall.getPosition().x, cueBall.getPosition().y);
-		balls[0].shape.m_radius = 0.028f; //56mm diameter.
-		balls[0].fdef.shape = &balls[0].shape;
-		balls[0].fdef.density = 1848.88194565217f; //At least, I think that's the actual density of a pool cue ball.
-		balls[0].fdef.restitution = 0.96f;
-		balls[0].fdef.friction = 0.2f;
-		balls[0].fixt = balls[0].body->CreateFixture(&balls[0].fdef);
+		for (int i = 0; i < BALL_COUNT; i++)
+		{
+			balls[i].def.type = b2_dynamicBody; 
+			balls[i].def.linearDamping = ballLinearDamping;
+			balls[i].def.angularDamping = ballAngularDamping;
+			balls[i].body = world.CreateBody(&balls[i].def);
+			balls[i].shape.m_radius = ballRadius;
+			balls[i].fdef.shape = &balls[i].shape;
+			balls[i].fdef.density = ballDensity;
+			balls[i].fdef.restitution = ballRestitution;
+			balls[i].fdef.friction = ballFriction;
+			balls[i].fixt = balls[i].body->CreateFixture(&balls[i].fdef);
+		}
 
-		//cueBall = Ball(b2Vec2(boardWidth / 2, boardLength / 2), true);
-		balls[1].def.type = b2_dynamicBody;
-		balls[1].def.linearDamping = 0.5f;
-		balls[1].def.angularDamping = 0.01f;
-		balls[1].def.position.Set(0.5f, 0.630f);
-		balls[1].body = world.CreateBody(&balls[1].def);
-		balls[1].shape.m_radius = 0.028f; //56mm diameter.
-		balls[1].fdef.shape = &balls[1].shape;
-		balls[1].fdef.density = 1848.88194565217f; //At least, I think that's the actual density of a pool cue ball.
-		balls[1].fdef.restitution = 0.96f;
-		balls[1].fdef.friction = 0.2f;
-		balls[1].fixt = balls[1].body->CreateFixture(&balls[1].fdef);
+		balls[0].body->SetTransform(b2Vec2(boardWidth*0.75f + wallDepth, boardLength / 2.0f), 0); //Cue ball.
+		//9-Ball Rack: 1 at the front, closest to the cue; 9 in the middle. 
+		balls[1].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth, boardLength / 2.0f), 0);
+		balls[9].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 4), boardLength / 2.0f), 0);
+		//9-Ball Rack: Other balls are placed randomly to make a diamond formation.
+		balls[2].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 4), boardLength / 2.0f + (ballRadius*2)), 0);
+		balls[3].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 4), boardLength / 2.0f - (ballRadius*2)), 0);
+		balls[4].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 2), boardLength / 2.0f + (ballRadius)), 0);
+		balls[5].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 2), boardLength / 2.0f - (ballRadius)), 0);
+		balls[6].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 6), boardLength / 2.0f + (ballRadius)), 0);
+		balls[7].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 6), boardLength / 2.0f - (ballRadius)), 0);
+		balls[8].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 8), boardLength / 2.0f), 0);
 	}
 
-	balls[0].body->ApplyLinearImpulseToCenter(b2Vec2(4.5f, 2.0f), true);
+	//balls[0].body->ApplyLinearImpulseToCenter(b2Vec2(-15.0f, 0.0f), true);
 }
