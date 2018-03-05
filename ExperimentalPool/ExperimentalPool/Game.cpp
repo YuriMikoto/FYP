@@ -57,11 +57,37 @@ void Game::processEvents()
 			}
 		}
 
+		if (sf::Event::MouseButtonPressed == event.type)
+		{
+			if (sf::Mouse::Left == event.key.code)
+			{
+				//Displays a line that indicates the direction you'll be firing the cue ball.
+				displayCueLine = true;
+			}
+		}
+
 		if (sf::Event::MouseButtonReleased == event.type)
 		{
 			if (sf::Mouse::Left == event.key.code)
 			{
-				balls[0].body->ApplyLinearImpulseToCenter(b2Vec2(-15.0f, 0.0f), true);
+				//Switches off the line display.
+				displayCueLine = false;
+
+				//Defines the maximum magnitude of the impulse velocity.
+				const float MAX_SPEED = 30.0f;
+
+				//Sets the impulse velocity based on mouse position in relation to cue ball position.
+				sf::Vector2f direction(balls[0].renderShape.getPosition().x - sf::Mouse::getPosition(m_window).x,
+					balls[0].renderShape.getPosition().y - sf::Mouse::getPosition(m_window).y);
+				direction *= 0.1f;
+				//Calculates the magnitude of the impulse velocity, then limits it if greater than the defined maximum.
+				float length = sqrt((direction.x * direction.x) + (direction.y * direction.y));
+				if (length > MAX_SPEED)
+				{
+					direction /= (length / MAX_SPEED);
+				}
+				//Finally, applies the calculated force.
+				balls[0].body->ApplyLinearImpulseToCenter(b2Vec2(direction.x, direction.y), true);
 			}
 		}
 	}
@@ -117,6 +143,20 @@ void Game::render()
 	for (int i = 0; i < BALL_COUNT; i++)
 	{
 		balls[i].Draw(&m_window);
+	}
+
+	if (displayCueLine)
+	{
+		//Creates and draws the "cue line" that appears when preparing a shot.
+		sf::Vertex line[] =
+		{
+			sf::Vertex(balls[0].renderShape.getPosition()),
+			sf::Vertex(sf::Vector2f(sf::Mouse::getPosition(m_window).x, sf::Mouse::getPosition(m_window).y))
+		};
+
+		line[1].color = sf::Color::Red;
+
+		m_window.draw(line, 2, sf::Lines);
 	}
 
 	m_window.display();

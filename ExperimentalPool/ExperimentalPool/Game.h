@@ -25,6 +25,7 @@ private:
 	const float32 timeStep = 1.0f / 60.0f;
 	const int32 velocityIterations = 8;
 	const int32 positionIterations = 3;
+	bool displayCueLine = false;
 
 	void processEvents();
 	void update(sf::Time t_deltaTime);
@@ -58,7 +59,7 @@ private:
 
 	float ballRadius = 0.028f;
 	float ballRestitution = 0.96f;
-	float ballFriction = 0.2f;
+	float ballFriction = 0.0f; //0.2f;
 	float ballDensity = 1848.88194565217f;
 	float ballLinearDamping = 0.5f;
 	float ballAngularDamping = 0.01f;
