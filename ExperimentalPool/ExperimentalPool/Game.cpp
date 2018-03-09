@@ -105,6 +105,11 @@ void Game::update(sf::Time t_deltaTime)
 	}
 	
 	world.Step(timeStep, velocityIterations, positionIterations);
+	for (int i = 0; i < 6; i++)
+	{
+		pockets[i].Update();
+	}
+
 	for (int i = 0; i < BALL_COUNT; i++)
 	{
 		balls[i].Update();
@@ -139,6 +144,11 @@ void Game::render()
 	southWall.Draw(&m_window);
 	westWall.Draw(&m_window);
 	eastWall.Draw(&m_window);
+
+	for (int i = 0; i < 6; i++)
+	{
+		pockets[i].Draw(&m_window);
+	}
 
 	for (int i = 0; i < BALL_COUNT; i++)
 	{
@@ -200,6 +210,11 @@ void Game::setupSprite()
 	westWall.SetupSprite();
 	eastWall.SetupSprite();
 
+	for (int i = 0; i < 6; i++)
+	{
+		pockets[i].SetupSprite(sf::Color(64, 64, 64, 255));
+	}
+
 	balls[0].SetupSprite(sf::Color(240, 240, 240, 255));
 	balls[1].SetupSprite(sf::Color(255, 255, 0, 255));
 	balls[2].SetupSprite(sf::Color(0, 0, 255, 255));
@@ -225,6 +240,7 @@ void Game::setupBoard()
 		northWall.shape.SetAsBox(boardWidth / 2.0f, wallDepth / 2.0f);
 		northWall.body->CreateFixture(&northWall.shape, 0.0f);
 		northWall.fdef.shape = &northWall.shape;
+		northWall.fdef.filter.categoryBits = WALL;
 		northWall.fdef.restitution = wallRestitution;
 		northWall.fixt = northWall.body->CreateFixture(&northWall.fdef);
 
@@ -234,6 +250,7 @@ void Game::setupBoard()
 		southWall.shape.SetAsBox(boardWidth / 2.0f, wallDepth / 2.0f);
 		southWall.body->CreateFixture(&southWall.shape, 0.0f);
 		southWall.fdef.shape = &southWall.shape;
+		southWall.fdef.filter.categoryBits = WALL;
 		southWall.fdef.restitution = wallRestitution;
 		southWall.fixt = southWall.body->CreateFixture(&southWall.fdef);
 
@@ -243,6 +260,7 @@ void Game::setupBoard()
 		westWall.shape.SetAsBox(wallDepth / 2.0f, boardLength / 2.0f);
 		westWall.body->CreateFixture(&westWall.shape, 0.0f);
 		westWall.fdef.shape = &westWall.shape;
+		westWall.fdef.filter.categoryBits = WALL;
 		westWall.fdef.restitution = wallRestitution;
 		westWall.fixt = westWall.body->CreateFixture(&westWall.fdef);
 
@@ -252,6 +270,7 @@ void Game::setupBoard()
 		eastWall.shape.SetAsBox(wallDepth / 2.0f, boardLength / 2.0f);
 		eastWall.body->CreateFixture(&eastWall.shape, 0.0f);
 		eastWall.fdef.shape = &eastWall.shape;
+		eastWall.fdef.filter.categoryBits = WALL;
 		eastWall.fdef.restitution = wallRestitution;
 		eastWall.fixt = eastWall.body->CreateFixture(&eastWall.fdef);
 	}
@@ -266,6 +285,7 @@ void Game::setupBoard()
 			balls[i].body = world.CreateBody(&balls[i].def);
 			balls[i].shape.m_radius = ballRadius;
 			balls[i].fdef.shape = &balls[i].shape;
+			balls[i].fdef.filter.categoryBits = BALL;
 			balls[i].fdef.density = ballDensity;
 			balls[i].fdef.restitution = ballRestitution;
 			balls[i].fdef.friction = ballFriction;
@@ -286,5 +306,28 @@ void Game::setupBoard()
 		balls[8].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 8), boardLength / 2.0f), 0);
 	}
 
-	//balls[0].body->ApplyLinearImpulseToCenter(b2Vec2(-15.0f, 0.0f), true);
+	//Pockets
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			pockets[i].def.type = b2_staticBody;
+			pockets[i].body = world.CreateBody(&pockets[i].def);
+			pockets[i].shape.m_radius = ballRadius*2;
+			pockets[i].fdef.shape = &pockets[0].shape;
+			pockets[i].fdef.isSensor = true;
+			pockets[i].fdef.filter.categoryBits = POCKET;
+			pockets[i].fdef.filter.maskBits = BALL;
+			pockets[i].fdef.density = ballDensity;
+			pockets[i].fdef.restitution = ballRestitution;
+			pockets[i].fdef.friction = ballFriction;
+			pockets[i].fixt = pockets[i].body->CreateFixture(&pockets[i].fdef);
+		}
+		
+		pockets[0].body->SetTransform(b2Vec2(wallDepth, wallDepth), 0);
+		pockets[1].body->SetTransform(b2Vec2(boardWidth/2+wallDepth, wallDepth*0.75), 0);
+		pockets[2].body->SetTransform(b2Vec2(boardWidth + wallDepth, wallDepth), 0);
+		pockets[3].body->SetTransform(b2Vec2(wallDepth, boardLength-wallDepth), 0);
+		pockets[4].body->SetTransform(b2Vec2(boardWidth/2+wallDepth, boardLength - wallDepth*0.75), 0);
+		pockets[5].body->SetTransform(b2Vec2(boardWidth+wallDepth, boardLength - wallDepth), 0);
+	}
 }

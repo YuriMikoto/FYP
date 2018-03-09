@@ -7,6 +7,7 @@
 
 #include "Wall.h"
 #include "Ball.h"
+#include "Pocket.h"
 
 class Game
 {
@@ -42,6 +43,13 @@ private:
 
 	//Ball cueBall;
 	Ball balls[BALL_COUNT];
+	Pocket pockets[6];
+
+	enum EntityTypes {
+		WALL = 0x0001,
+		BALL = 0x0002,
+		POCKET = 0x0004
+	};
 
 	void debugConsole();
 
