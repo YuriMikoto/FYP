@@ -12,6 +12,11 @@ public:
 	void Update();
 	void SetupSprite(sf::Color color);
 
+	void Deactivate()
+	{
+		active = false;
+	}
+
 	b2Vec2 getPosition();
 
 	b2BodyDef def;
@@ -28,4 +33,6 @@ private:
 	float velocity; //Current speed and direction.
 	sf::Texture texture;
 	sf::Sprite spr;
+
+	bool active = true; //True until the ball is pocketed.
 };

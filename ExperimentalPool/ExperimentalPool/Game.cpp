@@ -10,12 +10,14 @@ Game::Game() :
 	setupFontAndText(); // load font 
 	setupBoard();
 	setupSprite(); // load texture
-
+	world.SetContactListener(&conlistInstance);
 }
 
 Game::~Game()
 {
 }
+
+
 
 void Game::run()
 {
@@ -145,6 +147,25 @@ void Game::render()
 	westWall.Draw(&m_window);
 	eastWall.Draw(&m_window);
 
+	sf::Vertex baulkLine[] =
+	{
+		sf::Vertex(sf::Vector2f((boardWidth*0.25f + wallDepth) * 500, wallDepth*500)),
+		sf::Vertex(sf::Vector2f((boardWidth*0.25f + wallDepth) * 500, boardLength*500 - wallDepth*500))
+	};
+	baulkLine[0].color = sf::Color::Black;
+	baulkLine[1].color = sf::Color::Black;
+	m_window.draw(baulkLine, 2, sf::Lines);
+
+	//balls[0].body->SetTransform(b2Vec2(boardWidth*0.75f + wallDepth, boardLength / 2.0f), 0); //Cue ball.
+
+	sf::CircleShape footSpot;
+	footSpot.setFillColor(sf::Color::Black);
+	footSpot.setRadius(2);
+	footSpot.setOrigin(sf::Vector2f(footSpot.getRadius(), footSpot.getRadius()));
+	footSpot.setPosition(sf::Vector2f((boardWidth*0.75f + wallDepth) * 500, (boardLength / 2.0f) * 500));
+
+	m_window.draw(footSpot);
+
 	for (int i = 0; i < 6; i++)
 	{
 		pockets[i].Draw(&m_window);
@@ -158,15 +179,15 @@ void Game::render()
 	if (displayCueLine)
 	{
 		//Creates and draws the "cue line" that appears when preparing a shot.
-		sf::Vertex line[] =
+		sf::Vertex cueLine[] =
 		{
 			sf::Vertex(balls[0].renderShape.getPosition()),
 			sf::Vertex(sf::Vector2f(sf::Mouse::getPosition(m_window).x, sf::Mouse::getPosition(m_window).y))
 		};
 
-		line[1].color = sf::Color::Red;
+		cueLine[1].color = sf::Color::Red;
 
-		m_window.draw(line, 2, sf::Lines);
+		m_window.draw(cueLine, 2, sf::Lines);
 	}
 
 	m_window.display();
@@ -282,6 +303,7 @@ void Game::setupBoard()
 			balls[i].def.type = b2_dynamicBody; 
 			balls[i].def.linearDamping = ballLinearDamping;
 			balls[i].def.angularDamping = ballAngularDamping;
+			balls[i].def.userData = &balls[i]; //User data added.
 			balls[i].body = world.CreateBody(&balls[i].def);
 			balls[i].shape.m_radius = ballRadius;
 			balls[i].fdef.shape = &balls[i].shape;
@@ -311,15 +333,13 @@ void Game::setupBoard()
 		for (int i = 0; i < 6; i++)
 		{
 			pockets[i].def.type = b2_staticBody;
+			pockets[i].def.userData = &pockets[i]; //User data added.
 			pockets[i].body = world.CreateBody(&pockets[i].def);
 			pockets[i].shape.m_radius = ballRadius*2;
 			pockets[i].fdef.shape = &pockets[0].shape;
 			pockets[i].fdef.isSensor = true;
 			pockets[i].fdef.filter.categoryBits = POCKET;
 			pockets[i].fdef.filter.maskBits = BALL;
-			pockets[i].fdef.density = ballDensity;
-			pockets[i].fdef.restitution = ballRestitution;
-			pockets[i].fdef.friction = ballFriction;
 			pockets[i].fixt = pockets[i].body->CreateFixture(&pockets[i].fdef);
 		}
 		
@@ -331,3 +351,4 @@ void Game::setupBoard()
 		pockets[5].body->SetTransform(b2Vec2(boardWidth+wallDepth, boardLength - wallDepth), 0);
 	}
 }
+

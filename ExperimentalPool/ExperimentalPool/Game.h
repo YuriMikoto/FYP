@@ -2,12 +2,58 @@
 #ifndef GAME
 #define GAME
 
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Box2d\Box2d.h"
 
 #include "Wall.h"
 #include "Ball.h"
 #include "Pocket.h"
+
+class NewContactListener : public b2ContactListener
+{
+	bool checkContactComponents(b2Contact* contact, Ball*& ball, Ball*& pocket)
+	{
+		b2Fixture* fixtureA = contact->GetFixtureA();
+		b2Fixture* fixtureB = contact->GetFixtureB();
+
+		//Make sure one and only one of the fixtures is a sensor using bitwise XOR.
+		if (!(fixtureA->IsSensor() ^ fixtureB->IsSensor()))
+			return false;
+
+		Ball* entityA = static_cast<Ball*>(fixtureA->GetBody()->GetUserData());
+		Ball* entityB = static_cast<Ball*>(fixtureB->GetBody()->GetUserData());
+
+		if (fixtureA->IsSensor()) { //...then fixtureA must be the pocket.
+			pocket = entityA;
+			ball = entityB;
+		}
+		else { //...fixtureB must be the pocket.
+			pocket = entityB;
+			ball = entityA;
+		}
+		return true;
+	}
+
+	void BeginContact(b2Contact* contact) {
+		Ball* ball;
+		Ball* pocket;
+		if (checkContactComponents(contact, ball, pocket))
+		{
+			ball->Deactivate();
+			std::cout << "Ball-pocket contact begin." << std::endl;
+		}
+	}
+
+	void EndContact(b2Contact* contact) {
+		Ball* ball;
+		Ball* pocket;
+		if (checkContactComponents(contact, ball, pocket))
+		{
+			std::cout << "Ball-pocket contact end." << std::endl;
+		}
+	}
+};
 
 class Game
 {
@@ -36,6 +82,8 @@ private:
 	void setupSprite();
 	void setupBoard();
 
+	NewContactListener conlistInstance;
+
 	Wall northWall;
 	Wall southWall;
 	Wall eastWall;
@@ -43,7 +91,7 @@ private:
 
 	//Ball cueBall;
 	Ball balls[BALL_COUNT];
-	Pocket pockets[6];
+	Ball pockets[6];
 
 	enum EntityTypes {
 		WALL = 0x0001,

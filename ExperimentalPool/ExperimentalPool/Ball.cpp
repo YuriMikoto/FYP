@@ -15,6 +15,7 @@ Ball::~Ball()
 
 void Ball::Draw(sf::RenderWindow* window)
 {
+	if (active)
 	window->draw(renderShape);
 }
 
