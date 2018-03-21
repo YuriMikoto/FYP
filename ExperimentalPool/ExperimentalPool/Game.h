@@ -40,7 +40,7 @@ class NewContactListener : public b2ContactListener
 		Ball* pocket;
 		if (checkContactComponents(contact, ball, pocket))
 		{
-			ball->Deactivate();
+			ball->setActive(false);
 			std::cout << "Ball-pocket contact begin." << std::endl;
 		}
 	}
@@ -81,6 +81,7 @@ private:
 	void setupFontAndText();
 	void setupSprite();
 	void setupBoard();
+	void resetGame();
 
 	NewContactListener conlistInstance;
 

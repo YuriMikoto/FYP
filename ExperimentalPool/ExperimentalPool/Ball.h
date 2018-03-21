@@ -12,10 +12,7 @@ public:
 	void Update();
 	void SetupSprite(sf::Color color);
 
-	void Deactivate()
-	{
-		active = false;
-	}
+	void setActive(bool a);
 
 	b2Vec2 getPosition();
 

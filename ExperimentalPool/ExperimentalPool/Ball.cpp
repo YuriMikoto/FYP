@@ -38,6 +38,13 @@ void Ball::SetupSprite(sf::Color color)
 	renderShape.setPosition(sf::Vector2f(position.x * 500, position.y * 500));
 }
 
+void Ball::setActive(bool a)
+{
+	active = a;
+	body->SetLinearVelocity(b2Vec2(0, 0));
+
+}
+
 b2Vec2 Ball::getPosition()
 {
 	return position;

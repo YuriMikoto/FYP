@@ -57,6 +57,10 @@ void Game::processEvents()
 			{
 				m_exitGame = true;
 			}
+			if (sf::Keyboard::R == event.key.code)
+			{
+				resetGame();
+			}
 		}
 
 		if (sf::Event::MouseButtonPressed == event.type)
@@ -133,14 +137,11 @@ void Game::debugConsole()
 /// </summary>
 void Game::render()
 {
-	m_window.clear(sf::Color(42, 111, 77, 255));
-	//m_window.draw(m_welcomeMessage);
-	//m_window.draw(m_logoSprite);
-
-	/*northRect.setFillColor(sf::Color::Black);
-	northRect.setPosition(sf::Vector2f(northWall.getPosition().x, northWall.getPosition().y));
-	northRect.setSize(sf::Vector2f(northWall.getWidth() * 100, northWall.getHeight() * 100));
-	m_window.draw(northRect);*/
+	m_window.clear(sf::Color::White);
+	sf::RectangleShape clothRect(sf::Vector2f(boardWidth*500, (boardLength-wallDepth*2)*500));
+	clothRect.setPosition(sf::Vector2f(wallDepth*500, wallDepth*500));
+	clothRect.setFillColor(sf::Color(42, 111, 77, 255));
+	m_window.draw(clothRect);
 
 	northWall.Draw(&m_window);
 	southWall.Draw(&m_window);
@@ -155,8 +156,6 @@ void Game::render()
 	baulkLine[0].color = sf::Color::Black;
 	baulkLine[1].color = sf::Color::Black;
 	m_window.draw(baulkLine, 2, sf::Lines);
-
-	//balls[0].body->SetTransform(b2Vec2(boardWidth*0.75f + wallDepth, boardLength / 2.0f), 0); //Cue ball.
 
 	sf::CircleShape footSpot;
 	footSpot.setFillColor(sf::Color::Black);
@@ -352,3 +351,23 @@ void Game::setupBoard()
 	}
 }
 
+void Game::resetGame()
+{
+	for (int i = 0; i < BALL_COUNT; i++)
+	{
+		balls[i].body->SetLinearVelocity(b2Vec2(0, 0));
+		balls[i].setActive(true);
+	}
+	balls[0].body->SetTransform(b2Vec2(boardWidth*0.75f + wallDepth, boardLength / 2.0f), 0); //Cue ball.
+	//9-Ball Rack: 1 at the front, closest to the cue; 9 in the middle. 
+	balls[1].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth, boardLength / 2.0f), 0);
+	balls[9].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 4), boardLength / 2.0f), 0);
+	//9-Ball Rack: Other balls are placed randomly to make a diamond formation.
+	balls[2].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 4), boardLength / 2.0f + (ballRadius * 2)), 0);
+	balls[3].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 4), boardLength / 2.0f - (ballRadius * 2)), 0);
+	balls[4].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 2), boardLength / 2.0f + (ballRadius)), 0);
+	balls[5].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 2), boardLength / 2.0f - (ballRadius)), 0);
+	balls[6].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 6), boardLength / 2.0f + (ballRadius)), 0);
+	balls[7].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 6), boardLength / 2.0f - (ballRadius)), 0);
+	balls[8].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 8), boardLength / 2.0f), 0);
+}
