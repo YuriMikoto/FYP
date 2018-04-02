@@ -28,7 +28,7 @@ Wall::~Wall()
 void Wall::Update()
 {
 	position = body->GetPosition();
-	renderShape.setPosition(sf::Vector2f(position.x * 500, position.y * 500));
+	renderShape.setPosition(sf::Vector2f(position.x * PIXEL_SCALER, position.y * PIXEL_SCALER));
 }
 
 /// <summary>
@@ -49,9 +49,9 @@ void Wall::SetupShape(b2World world)
 void Wall::SetupSprite()
 {
 	renderShape.setFillColor(sf::Color::Black);
-	renderShape.setOrigin(sf::Vector2f(wallWidth * 250.0f, wallHeight * 250.0f));
-	renderShape.setPosition(sf::Vector2f(body->GetPosition().x * 500, body->GetPosition().y * 500));
-	renderShape.setSize(sf::Vector2f(wallWidth * 500, wallHeight * 500));
+	renderShape.setOrigin(sf::Vector2f(wallWidth * PIXEL_SCALER/2.0f, wallHeight * PIXEL_SCALER/2.0f));
+	renderShape.setPosition(sf::Vector2f(body->GetPosition().x * PIXEL_SCALER, body->GetPosition().y * PIXEL_SCALER));
+	renderShape.setSize(sf::Vector2f(wallWidth * PIXEL_SCALER, wallHeight * PIXEL_SCALER));
 }
 
 /// <summary>

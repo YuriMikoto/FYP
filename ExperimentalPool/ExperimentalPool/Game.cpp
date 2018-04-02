@@ -4,7 +4,7 @@
 #include <iostream>
 
 Game::Game() :
-	m_window{ sf::VideoMode{ 1600, 900, 32 }, "Experimental Pool" },
+	m_window{ sf::VideoMode{ WINDOW_WIDTH, WINDOW_HEIGHT, 32 }, "Experimental Pool" },
 	m_exitGame{false} //when true game will exit
 {
 	setupFontAndText(); // load font 
@@ -138,8 +138,8 @@ void Game::debugConsole()
 void Game::render()
 {
 	m_window.clear(sf::Color::White);
-	sf::RectangleShape clothRect(sf::Vector2f(boardWidth*500, (boardLength-wallDepth*2)*500));
-	clothRect.setPosition(sf::Vector2f(wallDepth*500, wallDepth*500));
+	sf::RectangleShape clothRect(sf::Vector2f(boardWidth*PIXEL_SCALER, (boardLength-wallDepth*2)*PIXEL_SCALER));
+	clothRect.setPosition(sf::Vector2f(wallDepth*PIXEL_SCALER, wallDepth*PIXEL_SCALER));
 	clothRect.setFillColor(sf::Color(42, 111, 77, 255));
 	m_window.draw(clothRect);
 
@@ -150,8 +150,8 @@ void Game::render()
 
 	sf::Vertex baulkLine[] =
 	{
-		sf::Vertex(sf::Vector2f((boardWidth*0.25f + wallDepth) * 500, wallDepth*500)),
-		sf::Vertex(sf::Vector2f((boardWidth*0.25f + wallDepth) * 500, boardLength*500 - wallDepth*500))
+		sf::Vertex(sf::Vector2f((boardWidth*0.25f + wallDepth) * PIXEL_SCALER, wallDepth*PIXEL_SCALER)),
+		sf::Vertex(sf::Vector2f((boardWidth*0.25f + wallDepth) * PIXEL_SCALER, boardLength*PIXEL_SCALER - wallDepth*PIXEL_SCALER))
 	};
 	baulkLine[0].color = sf::Color::Black;
 	baulkLine[1].color = sf::Color::Black;
@@ -161,7 +161,7 @@ void Game::render()
 	footSpot.setFillColor(sf::Color::Black);
 	footSpot.setRadius(2);
 	footSpot.setOrigin(sf::Vector2f(footSpot.getRadius(), footSpot.getRadius()));
-	footSpot.setPosition(sf::Vector2f((boardWidth*0.75f + wallDepth) * 500, (boardLength / 2.0f) * 500));
+	footSpot.setPosition(sf::Vector2f((boardWidth*0.75f + wallDepth) * PIXEL_SCALER, (boardLength / 2.0f) * PIXEL_SCALER));
 
 	m_window.draw(footSpot);
 

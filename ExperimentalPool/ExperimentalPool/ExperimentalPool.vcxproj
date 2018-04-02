@@ -29,6 +29,7 @@
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Pocket.h" />
+    <ClInclude Include="System.h" />
     <ClInclude Include="Wall.h" />
   </ItemGroup>
   <ItemGroup>

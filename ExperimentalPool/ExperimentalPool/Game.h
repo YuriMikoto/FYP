@@ -9,6 +9,7 @@
 #include "Wall.h"
 #include "Ball.h"
 #include "Pocket.h"
+#include "System.h"
 
 class NewContactListener : public b2ContactListener
 {
