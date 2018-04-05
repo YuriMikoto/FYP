@@ -14,6 +14,9 @@ public:
 	void SetupSprite(sf::Color color);
 
 	void setActive(bool a);
+	void pocket();
+	void setID(int val);
+	int getID();
 
 	b2Vec2 getPosition();
 
@@ -26,7 +29,9 @@ public:
 	sf::CircleShape renderShape;
 private:
 	//b2_pi is a thing.
-	bool cue; //True if this is the cue ball, false otherwise. 
+	int id; //Indicates the number of the ball. 
+			//Array ID is not sufficient due to the way collision callbacks work.
+			//However, this ID value for a ball will match its entry in the array.
 	b2Vec2 position;
 	float velocity; //Current speed and direction.
 	sf::Texture texture;

@@ -42,6 +42,9 @@ class NewContactListener : public b2ContactListener
 		if (checkContactComponents(contact, ball, pocket))
 		{
 			ball->setActive(false);
+			//ball->body->SetTransform(b2Vec2(ball->getID() * ball->renderShape.getRadius() * 1.2f, 1.35f * 1.2f), 0);
+			//Maybe a ball's "active" variable shouldn't determine whether or not it draws, but instead...
+			//If "active" == false, it is queued up to be moved outside the board on the next update.
 			std::cout << "Ball-pocket contact begin." << std::endl;
 		}
 	}
@@ -109,6 +112,8 @@ private:
 	sf::Texture m_logoTexture; // texture used for sfml logo
 	sf::Sprite m_logoSprite; // sprite used for sfml logo
 	bool m_exitGame; // control exiting game
+
+
 
 	float boardWidth = 2.7f; //North/South walls' width.
 	float boardLength = 1.35f; //East/West walls' height.

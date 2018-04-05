@@ -3,7 +3,7 @@
 Ball::Ball() {}
 
 Ball::Ball(b2Vec2 pos, bool isCue) : 
-	position(pos), cue(isCue)
+	position(pos)
 {
 
 }
@@ -15,7 +15,6 @@ Ball::~Ball()
 
 void Ball::Draw(sf::RenderWindow* window)
 {
-	if (active)
 	window->draw(renderShape);
 }
 
@@ -27,6 +26,11 @@ void Ball::Update()
 	if (body->GetLinearVelocity().Length() < 0.01)
 	{
 		body->SetLinearVelocity(b2Vec2(0, 0));
+	}
+
+	if (!active)
+	{
+		pocket();
 	}
 }
 
@@ -43,6 +47,21 @@ void Ball::setActive(bool a)
 	active = a;
 	body->SetLinearVelocity(b2Vec2(0, 0));
 
+}
+
+void Ball::pocket()
+{							//(ID * radius * 2   ) + radius,(Width * 1.2 )
+	body->SetTransform(b2Vec2((id * 0.028f * 2.0f) + 0.028f, 1.35f * 1.2f), 0);
+}
+
+void Ball::setID(int val)
+{
+	id = val;
+}
+
+int Ball::getID()
+{
+	return id;
 }
 
 b2Vec2 Ball::getPosition()

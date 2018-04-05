@@ -299,6 +299,7 @@ void Game::setupBoard()
 	{
 		for (int i = 0; i < BALL_COUNT; i++)
 		{
+			balls[i].setID(i);
 			balls[i].def.type = b2_dynamicBody; 
 			balls[i].def.linearDamping = ballLinearDamping;
 			balls[i].def.angularDamping = ballAngularDamping;
@@ -359,6 +360,7 @@ void Game::resetGame()
 		balls[i].setActive(true);
 	}
 	balls[0].body->SetTransform(b2Vec2(boardWidth*0.75f + wallDepth, boardLength / 2.0f), 0); //Cue ball.
+	/*
 	//9-Ball Rack: 1 at the front, closest to the cue; 9 in the middle. 
 	balls[1].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth, boardLength / 2.0f), 0);
 	balls[9].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 4), boardLength / 2.0f), 0);
@@ -370,4 +372,5 @@ void Game::resetGame()
 	balls[6].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 6), boardLength / 2.0f + (ballRadius)), 0);
 	balls[7].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 6), boardLength / 2.0f - (ballRadius)), 0);
 	balls[8].body->SetTransform(b2Vec2(boardWidth*0.25f + wallDepth - (ballRadius * 8), boardLength / 2.0f), 0);
+	*/
 }
