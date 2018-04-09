@@ -178,10 +178,16 @@ void Game::render()
 	if (displayCueLine)
 	{
 		//Creates and draws the "cue line" that appears when preparing a shot.
+
+		//This vector separates where the mouse cursor and cue ball are.
+		//It's used to reverse the "cue line" so it points in the direction the ball will move.
+		sf::Vector2f diff = sf::Vector2f(balls[0].renderShape.getPosition().x - sf::Mouse::getPosition(m_window).x,
+										 balls[0].renderShape.getPosition().y - sf::Mouse::getPosition(m_window).y);
+
 		sf::Vertex cueLine[] =
 		{
 			sf::Vertex(balls[0].renderShape.getPosition()),
-			sf::Vertex(sf::Vector2f(sf::Mouse::getPosition(m_window).x, sf::Mouse::getPosition(m_window).y))
+			sf::Vertex(sf::Vector2f(sf::Mouse::getPosition(m_window).x + diff.x*2, sf::Mouse::getPosition(m_window).y + diff.y*2))
 		};
 
 		cueLine[1].color = sf::Color::Red;
